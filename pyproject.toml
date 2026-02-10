@@ -1,0 +1,82 @@
+[project]
+name = "ganoderma-papers-rag"
+version = "0.1.0"
+description = "RAG system for Ganoderma academic papers with PDF processing"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    # Web scraping
+    "beautifulsoup4>=4.12.0",
+    "requests>=2.31.0",
+    "lxml>=5.1.0",
+    
+    # PDF processing
+    "pymupdf>=1.23.0",
+    "pdfplumber>=0.10.0",
+    
+    # Text processing
+    "langchain>=0.1.0",
+    "langchain-text-splitters>=0.0.1",
+    
+    # Embeddings
+    "sentence-transformers>=2.3.0",
+    
+    # Database
+    "psycopg2-binary>=2.9.9",
+    "sqlalchemy>=2.0.25",
+    
+    # Vector database
+    "opensearch-py>=2.4.0",
+    
+    # Cache
+    "redis>=5.0.1",
+    
+    # LLM
+    "ollama>=0.1.0",
+    
+    # API
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    
+    # UI
+    "gradio>=4.16.0",
+    
+    # Airflow
+    "apache-airflow>=2.8.0",
+    
+    # Observability
+    "langfuse>=2.0.0",
+    
+    # Utilities
+    "python-dotenv>=1.0.0",
+    "loguru>=0.7.2",
+    "tenacity>=8.2.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.12.0",
+    "ruff>=0.1.0",
+    "mypy>=1.8.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
