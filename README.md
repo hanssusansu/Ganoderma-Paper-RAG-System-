@@ -1,286 +1,286 @@
 # 🍄 Ganoderma Papers RAG System
 
-一個專門處理靈芝學術論文的 RAG（Retrieval-Augmented Generation）系統，能夠自動抓取、處理和查詢靈芝相關的學術研究。
+A specialized Retrieval-Augmented Generation (RAG) system for Ganoderma academic papers, capable of automated scraping, processing, and querying of Ganoderma-related academic research.
 
-## ✨ 功能特色
+## ✨ Features
 
-- 📚 **多專欄抓取**：自動從靈芝新聞網抓取所有專欄的學術論文
-- 📄 **PDF 處理**：智能下載和解析學術論文 PDF
-- 🔍 **混合檢索**：結合 BM25 和向量搜尋的混合檢索策略
-- 🤖 **AI 問答**：使用 Ollama 本地 LLM 提供專業的文獻引用回答
-- 📊 **資料管道**：使用 Airflow 自動化資料擷取和處理
-- 🎨 **友善介面**：Gradio 網頁介面，易於使用
+- 📚 **Multi-Column Scraping**: Automatically scrapes academic papers from all columns of the Ganoderma News website.
+- 📄 **PDF Processing**: Smart downloading and parsing of academic paper PDFs.
+- 🔍 **Hybrid Retrieval**: Hybrid search strategy combining BM25 and vector search.
+- 🤖 **AI Q&A**: Uses Ollama local LLM to provide professional answers with literature citations.
+- 📊 **Data Pipeline**: Automated data extraction and processing using Apache Airflow.
+- 🎨 **User-Friendly Interface**: Gradio web interface, easy to use.
 
-## 🏗️ 系統架構
+## 🏗️ System Architecture
 
 ```
-資料來源 → 爬蟲 → PDF下載 → 解析 → 分塊 → 向量化 → 儲存 → RAG查詢 → 使用者介面
+Data Source → Scraper → PDF Download → Parse → Chunking → Vectorization → Storage → RAG Query → User Interface
 ```
 
-詳細架構請參考：[docs/SYSTEM_OVERVIEW.md](docs/SYSTEM_OVERVIEW.md)
+For detailed architecture, please refer to: [docs/SYSTEM_OVERVIEW.md](docs/SYSTEM_OVERVIEW.md)
 
-## 📦 技術堆疊
+## 📦 Tech Stack
 
-- **語言**: Python 3.11+
-- **資料庫**: PostgreSQL 15
-- **向量資料庫**: OpenSearch 2.11
-- **快取**: Redis 7
+- **Language**: Python 3.11+
+- **Database**: PostgreSQL 15
+- **Vector Database**: OpenSearch 2.11
+- **Cache**: Redis 7
 - **LLM**: Ollama (llama3.1:8b)
 - **Embeddings**: Jina Embeddings v3
 - **API**: FastAPI
 - **UI**: Gradio
-- **工作流程**: Apache Airflow
+- **Workflow**: Apache Airflow
 
-## 🚀 快速開始
+## 🚀 Quick Start
 
-### 前置需求
+### Prerequisites
 
 - Docker Desktop
 - Python 3.11+
-- 至少 16 GB RAM
-- 20 GB 硬碟空間
+- At least 16 GB RAM
+- 20 GB Disk Space
 
-### 1. 克隆專案
+### 1. Clone Project
 
 ```bash
-cd ganoderma-papers-rag
+git clone https://github.com/Hansforwork1/Ganoderma-Paper-RAG-System-.git
+cd Ganoderma-Paper-RAG-System-
 ```
 
-### 2. 設定環境變數
+### 2. Configure Environment Variables
 
 ```bash
-# 複製環境變數範例
+# Copy example environment variables
+# Windows PowerShell
 Copy-Item .env.example .env
 
-# 編輯 .env 檔案，設定必要的參數
+# Edit .env file to set necessary parameters
 notepad .env
 ```
 
-### 3. 啟動 Docker 服務
+### 3. Start Docker Services
 
 ```bash
-# 啟動所有服務
+# Start all services
 docker-compose up -d
 
-# 查看服務狀態
+# Check service status
 docker-compose ps
 
-# 查看日誌
+# View logs
 docker-compose logs -f
 ```
 
-### 4. 初始化資料庫
+### 4. Initialize Database
 
 ```bash
-# 建立 Python 虛擬環境
+# Create Python virtual environment
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 
-# 安裝依賴
+# Install dependencies
 pip install -e .
 
-# 初始化資料庫
+# Initialize database
 python scripts/init_db.py
 ```
 
-### 5. 下載 Ollama 模型
+### 5. Download Ollama Model
 
 ```bash
-# 進入 Ollama 容器
+# Enter Ollama container
 docker exec -it ganoderma-ollama bash
 
-# 下載模型
+# Download model
 ollama pull llama3.1:8b
 
-# 退出容器
+# Exit container
 exit
 ```
 
-### 6. 測試爬蟲
+### 6. Test Scraper
 
 ```bash
-# 測試爬蟲功能
+# Test scraper function
 python scripts/test_scraper.py
 ```
 
-## 📖 使用指南
+## 📖 Usage Guide
 
-### 🤖 自動化全流程抓取 (Automated Ingestion)
+### 🤖 Automated Full-Process Ingestion
 
-本專案提供了一個自動化腳本，可以一次執行「爬蟲 → 下載 → 解析 → 標註 → 儲存」的所有步驟。
+This project provides an automated script that performs all steps: "Scrape → Download → Parse → Tag → Store".
 
 ```bash
-# 執行自動化腳本
+# Run automated script
 python scripts/auto_ingest.py
 ```
 
-這適合定期執行或是第一次初始化資料庫時使用。
+This is suitable for periodic execution or first-time database initialization.
 
-### 🛠️ 手動/單步執行 (Manual/Step-by-Step)
+### 🛠️ Manual/Step-by-Step Execution
 
-若您需要針對特定步驟除錯，或只想抓取特定論文，可以使用手動指令：
-
-若您需要立即抓取特定內容或進行測試，可以使用以下指令手動執行：
+If you need to debug specific steps or scrape only specific papers, use manual commands:
 
 ```bash
-# 抓取所有專欄的論文
+# Scrape papers from all columns
 python scripts/manual_ingest.py --all
 
-# 只抓取特定專欄
+# Scrape only specific category
 python scripts/manual_ingest.py --category "研究新知"
 
-# 限制數量
+# Limit quantity
 python scripts/manual_ingest.py --limit 10
 ```
 
-### 啟動 API 服務
+### Start API Service
 
 ```bash
-# 開發模式
+# Development mode
 uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
 
-# 生產模式
+# Production mode
 uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
-### 啟動 Gradio 介面
+### Start Gradio Interface
 
 ```bash
 python src/ui/gradio_app.py
 ```
 
-然後在瀏覽器開啟：http://localhost:7860
+Then open in browser: http://localhost:7860
 
-## 📁 專案結構
+## 📁 Project Structure
 
 ```
 ganoderma-papers-rag/
-├── src/                      # 主要程式碼
-│   ├── scrapers/            # 爬蟲模組
-│   ├── processors/          # 資料處理
-│   ├── storage/             # 儲存層
-│   ├── rag/                 # RAG 核心
-│   ├── api/                 # API 服務
-│   └── ui/                  # 使用者介面
-├── data/                     # 資料儲存
-│   ├── pdfs/               # PDF 檔案
-│   └── metadata/           # 元數據
+├── src/                      # Main source code
+│   ├── scrapers/            # Scraper modules
+│   ├── processors/          # Data processing
+│   ├── storage/             # Storage layer
+│   ├── rag/                 # RAG core
+│   ├── api/                 # API service
+│   └── ui/                  # User interface
+├── data/                     # Data storage
+│   ├── pdfs/               # PDF files
+│   └── metadata/           # Metadata
 ├── airflow/                  # Airflow DAGs
-├── scripts/                  # 工具腳本
-├── tests/                    # 測試
-├── docs/                     # 文件
-├── docker-compose.yml        # Docker 配置
-├── pyproject.toml           # Python 專案配置
-└── README.md                # 本檔案
+├── scripts/                  # Utility scripts
+├── tests/                    # Tests
+├── docs/                     # Documentation
+├── docker-compose.yml        # Docker configuration
+├── pyproject.toml           # Python project config
+└── README.md                # This file
 ```
 
-## 🔧 配置說明
+## 🔧 Configuration
 
-主要配置檔案：`.env`
+Main configuration file: `.env`
 
-關鍵配置項：
+Key configurations:
 
 ```bash
-# 資料庫
+# Database
 POSTGRES_PASSWORD=your_secure_password
 
-# Jina API（用於 Embeddings）
+# Jina API (for Embeddings)
 JINA_API_KEY=your_jina_api_key
 
-# Ollama 模型
+# Ollama Model
 OLLAMA_MODEL=llama3.1:8b
 
-# 爬蟲設定
-SCRAPER_DELAY_SECONDS=2  # 禮貌性延遲
-SCRAPER_MAX_RETRIES=3    # 重試次數
+# Scraper Settings
+SCRAPER_DELAY_SECONDS=2  # Polite delay
+SCRAPER_MAX_RETRIES=3    # Retry attempts
 ```
 
-## 📊 資料流程
+## 📊 Data Flow
 
-1. **抓取階段**：爬蟲從靈芝新聞網抓取文章，提取論文連結
-2. **下載階段**：PDF 下載器下載論文 PDF 檔案
-3. **處理階段**：解析 PDF，提取文字，智能分塊
-4. **向量化階段**：使用 Jina Embeddings 生成向量
-5. **儲存階段**：儲存到 PostgreSQL 和 OpenSearch
-6. **查詢階段**：混合檢索 + LLM 生成答案
+1. **Scraping Phase**: Scraper fetches articles from Ganoderma News, extracts paper links.
+2. **Download Phase**: PDF downloader downloads paper PDF files.
+3. **Processing Phase**: Parses PDF, extracts text, smart chunking.
+4. **Vectorization Phase**: Generates vectors using Jina Embeddings.
+5. **Storage Phase**: Saves to PostgreSQL and OpenSearch.
+6. **Query Phase**: Hybrid retrieval + LLM generates answer.
 
-## 🧪 測試
+## 🧪 Testing
 
 ```bash
-# 執行所有測試
+# Run all tests
 pytest
 
-# 執行特定測試
+# Run specific test
 pytest tests/test_scrapers.py
 
-# 查看覆蓋率
+# Check coverage
 pytest --cov=src tests/
 ```
 
-## 📝 API 文件
+## 📝 API Documentation
 
-啟動 API 服務後，訪問：
+After starting the API service, visit:
 
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
-### 主要端點
+### Main Endpoint
 
 **POST /ask-agentic**
 ```json
 {
-  "query": "靈芝對假牙性口腔炎有什麼療效？",
+  "query": "What are the therapeutic effects of Ganoderma on denture stomatitis?",
   "citation_format": "APA",
   "top_k": 10
 }
 ```
 
-## 💾 儲存空間
+## 💾 Storage Size
 
-預估儲存需求：
+Estimated storage requirements:
 
-- PDF 檔案：1-1.5 GB
-- 資料庫：120 MB
-- 向量資料庫：300 MB
-- Docker 容器：6.75 GB
-- **總計：約 8-9 GB**
+- PDF Files: 1-1.5 GB
+- Database: 120 MB
+- Vector Database: 300 MB
+- Docker Containers: 6.75 GB
+- **Total: Approx 8-9 GB**
 
-## 🔍 常見問題
+## 🔍 FAQ
 
-### Q: 如何更改 PDF 儲存位置？
+### Q: How to change PDF storage location?
 
-A: 修改 `.env` 中的 `PDF_STORAGE_PATH` 參數。
+A: Modify `PDF_STORAGE_PATH` parameter in `.env`.
 
-### Q: 如何新增其他專欄？
+### Q: How to add other columns?
 
-A: 編輯 `src/scrapers/ganoderma_news.py` 中的 `CATEGORIES` 列表。
+A: Edit `CATEGORIES` list in `src/scrapers/ganoderma_news.py`.
 
-### Q: 下載失敗怎麼辦？
+### Q: What if download fails?
 
-A: 系統會自動重試 3 次。失敗的論文會記錄在 `data/metadata/download_log.json`。
+A: System will auto-retry 3 times. Failed papers are logged in `data/metadata/download_log.json`.
 
-### Q: 如何更換 LLM 模型？
+### Q: How to change LLM model?
 
-A: 修改 `.env` 中的 `OLLAMA_MODEL`，然後用 `ollama pull` 下載新模型。
+A: Modify `OLLAMA_MODEL` in `.env`, then run `ollama pull` to download the new model.
 
-## 📚 相關文件
+## 📚 Related Documentation
 
-- [系統架構總覽](docs/SYSTEM_OVERVIEW.md)
-- [實作計畫](docs/IMPLEMENTATION_PLAN.md)
-- [任務清單](docs/TASK_LIST.md)
+- [System Overview](docs/SYSTEM_OVERVIEW.md)
+- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md)
+- [Task List](docs/TASK_LIST.md)
 
-## 🤝 貢獻
+## 🤝 Contribution
 
-歡迎提交 Issue 和 Pull Request！
+Issues and Pull Requests are welcome!
 
-## 📄 授權
+## 📄 License
 
 MIT License
 
-## 👨‍💻 作者
+## 👨‍💻 Author
 
-數位行銷分析師專用工具
+hanssusansu
 
 ---
 
-**注意**：本系統僅用於學術研究和個人學習，請遵守相關網站的使用條款和版權規定。
+**Note**: This system is for academic research and personal learning only. Please comply with the terms of use and copyright regulations of relevant websites.

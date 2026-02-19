@@ -1,136 +1,136 @@
-# 🍄 Ganoderma Papers RAG 系統使用指南
+# 🍄 Ganoderma Papers RAG System Usage Guide
 
-## 🚀 快速啟動
+## 🚀 Quick Start
 
-### 1. 啟動 Docker 服務
+### 1. Start Docker Services
 
 ```powershell
 cd "D:\anti test\ganoderma-papers-rag"
 docker-compose up -d
 ```
 
-### 2. 下載 Ollama 模型（首次使用）
+### 2. Download Ollama Model (First Time Use)
 
 ```powershell
 docker exec -it ganoderma-ollama ollama pull llama2
 ```
 
-### 3. 啟動服務
+### 3. Start Services
 
-#### 選項 A: Web 介面（Gradio）
+#### Option A: Web Interface (Gradio)
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 python scripts/launch_ui.py
 ```
 
-訪問: http://localhost:7860
+Visit: http://localhost:7860
 
-#### 選項 B: API 服務（FastAPI）
+#### Option B: API Service (FastAPI)
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 python scripts/launch_api.py
 ```
 
-訪問: http://localhost:8000/docs
+Visit: http://localhost:8000/docs
 
 ---
 
-## 📖 功能說明
+## 📖 Features
 
-### Web 介面功能
+### Web Interface Features
 
-- ✅ 問答介面
-- ✅ 來源引用顯示
-- ✅ 可調整檢索數量
-- ✅ 範例問題
+- ✅ Q&A Interface
+- ✅ Source Citation Display
+- ✅ Adjustable Retrieval Quantity
+- ✅ Example Questions
 
-### API 端點
+### API Endpoints
 
-- `GET /` - API 資訊
-- `GET /health` - 健康檢查
-- `POST /query` - 問答查詢
-- `GET /stats` - 系統統計
+- `GET /` - API Info
+- `GET /health` - Health Check
+- `POST /query` - Q&A Query
+- `GET /stats` - System Stats
 
-### 自動化爬取
+### Automated Scraping
 
-使用 Airflow DAG 定期爬取新論文（每週一次）
+Use Airflow DAG to periodically scrape new papers (weekly).
 
 ---
 
-## 💡 使用範例
+## 💡 Usage Examples
 
-### Python 程式碼
+### Python Code
 
 ```python
 from src.rag.retriever import SimpleRetriever
 from src.rag.generator import RAGGenerator
 
-# 初始化
+# Initialize
 retriever = SimpleRetriever()
 generator = RAGGenerator()
 retriever.load_chunks()
 
-# 查詢
-query = "靈芝有什麼功效？"
+# Query
+query = "What are the benefits of Ganoderma?"
 results = retriever.retrieve(query, top_k=3)
 answer = generator.generate_answer(query, results)
 
 print(answer)
 ```
 
-### API 請求
+### API Request
 
 ```bash
 curl -X POST "http://localhost:8000/query" \
   -H "Content-Type: application/json" \
-  -d '{"question": "靈芝有什麼功效？", "top_k": 5}'
+  -d '{"question": "What are the benefits of Ganoderma?", "top_k": 5}'
 ```
 
 ---
 
-## 🎯 系統架構
+## 🎯 System Architecture
 
 ```
-使用者
+User
   ↓
 Web UI / API
   ↓
-RAG 系統
-  ├─ 檢索器 (Retriever)
-  └─ 生成器 (Generator)
+RAG System
+  ├─ Retriever
+  └─ Generator
   ↓
-資料層
-  ├─ PostgreSQL (元數據)
-  ├─ OpenSearch (向量搜尋)
-  └─ PDF 檔案
+Data Layer
+  ├─ PostgreSQL (Metadata)
+  ├─ OpenSearch (Vector Search)
+  └─ PDF Files
 ```
 
 ---
 
-## 📝 常見問題
+## 📝 FAQ
 
-### Q: Ollama 連線失敗？
+### Q: Ollama connection failed?
 
-確認 Ollama 容器正在運行：
+Confirm Ollama container is running:
 ```powershell
 docker ps | findstr ollama
 ```
 
-### Q: 找不到分塊資料？
+### Q: Cannot find chunk data?
 
-執行 PDF 處理管道：
+Run PDF processing pipeline:
 ```powershell
 python scripts/test_pdf_processing.py
 ```
 
-### Q: 如何添加新論文？
+### Q: How to add new papers?
 
-1. 手動下載 PDF 到 `data/pdfs/PMC/`
-2. 執行處理腳本
-3. 重啟服務
+1. Manually download PDF to `data/pdfs/PMC/`
+2. Run processing script
+3. Restart services
 
 ---
 
-**系統已完全可用！** 🎉
+**System is ready to use!** 🎉

@@ -1,208 +1,208 @@
-# 🚀 快速啟動指南
+# 🚀 Quick Start Guide
 
-這份指南將幫助你在 5 分鐘內啟動 Ganoderma Papers RAG 系統！
+This guide will help you start the Ganoderma Papers RAG system in 5 minutes!
 
-## 📋 前置檢查
+## 📋 Prerequisites
 
-確保你已安裝：
-- ✅ Docker Desktop（正在運行）
+Ensure you have installed:
+- ✅ Docker Desktop (Running)
 - ✅ Python 3.11+
-- ✅ 至少 10 GB 可用硬碟空間
+- ✅ At least 10 GB available disk space
 
-## 🎯 步驟 1：設定環境變數
+## 🎯 Step 1: Configure Environment Variables
 
 ```powershell
-# 進入專案目錄
+# Enter project directory
 cd "D:\anti test\ganoderma-papers-rag"
 
-# 複製環境變數範例
+# Copy example environment variables
 Copy-Item .env.example .env
 
-# 使用記事本編輯（或你喜歡的編輯器）
+# Edit with notepad (or your preferred editor)
 notepad .env
 ```
 
-**最小配置**（其他保持預設即可）：
+**Minimal Configuration** (Keep others as default):
 ```bash
-# 設定一個安全的密碼
+# Set a secure password
 POSTGRES_PASSWORD=your_secure_password_123
 
-# 如果你有 Jina API Key（可選，用於更好的 embeddings）
+# If you have Jina API Key (Optional, for better embeddings)
 JINA_API_KEY=your_jina_api_key_here
 ```
 
-## 🐳 步驟 2：啟動 Docker 服務
+## 🐳 Step 2: Start Docker Services
 
 ```powershell
-# 啟動所有服務（PostgreSQL, OpenSearch, Redis, Ollama）
+# Start all services (PostgreSQL, OpenSearch, Redis, Ollama)
 docker-compose up -d
 
-# 等待服務啟動（約 30-60 秒）
-# 查看服務狀態
+# Wait for services to start (approx. 30-60 seconds)
+# Check service status
 docker-compose ps
 ```
 
-你應該看到 4 個服務都在運行：
+You should see 4 services running:
 - ✅ ganoderma-postgres
 - ✅ ganoderma-opensearch  
 - ✅ ganoderma-redis
 - ✅ ganoderma-ollama
 
-## 🐍 步驟 3：設定 Python 環境
+## 🐍 Step 3: Configure Python Environment
 
 ```powershell
-# 建立虛擬環境
+# Create virtual environment
 python -m venv .venv
 
-# 啟動虛擬環境
+# Activate virtual environment
 .\.venv\Scripts\Activate.ps1
 
-# 安裝依賴套件
+# Install dependencies
 pip install -e .
 ```
 
-## 🗄️ 步驟 4：初始化資料庫
+## 🗄️ Step 4: Initialize Database
 
 ```powershell
-# 建立資料庫表格
+# Create database tables
 python scripts/init_db.py
 ```
 
-你應該看到：
+You should see:
 ```
 ✓ Database schema created successfully!
 ```
 
-## 🤖 步驟 5：下載 LLM 模型
+## 🤖 Step 5: Download LLM Model
 
 ```powershell
-# 進入 Ollama 容器
+# Enter Ollama container
 docker exec -it ganoderma-ollama bash
 
-# 下載 Llama 3.1 模型（約 4.7 GB，需要幾分鐘）
+# Download Llama 3.1 model (approx. 4.7 GB, takes a few minutes)
 ollama pull llama3.1:8b
 
-# 驗證模型已下載
+# Verify model downloaded
 ollama list
 
-# 退出容器
+# Exit container
 exit
 ```
 
-## 🧪 步驟 6：測試爬蟲
+## 🧪 Step 6: Test Scraper
 
 ```powershell
-# 測試爬蟲功能
+# Test scraper function
 python scripts/test_scraper.py
 ```
 
-你應該看到：
+You should see:
 ```
 ✓ Successfully extracted paper info
 ✓ Successfully downloaded PDF
 ```
 
-## 🎉 完成！
+## 🎉 Complete!
 
-恭喜！系統已經準備就緒！
+Congratulations! The system is ready!
 
-## 📝 下一步
+## 📝 Next Steps
 
-### 選項 A：手動抓取論文（推薦先測試）
+### Option A: Manual Scraping (Recommended to test first)
 
 ```powershell
-# 抓取前 10 篇論文測試
+# Scrape top 10 papers for testing
 python scripts/manual_ingest.py --limit 10
 ```
 
-### 選項 B：啟動 API 服務
+### Option B: Start API Service
 
 ```powershell
-# 啟動 FastAPI 服務
+# Start FastAPI service
 uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-然後訪問：http://localhost:8000/docs
+Then visit: http://localhost:8000/docs
 
-### 選項 C：啟動 Gradio 介面
+### Option C: Start Gradio Interface
 
 ```powershell
-# 啟動網頁介面
+# Start web interface
 python src/ui/gradio_app.py
 ```
 
-然後訪問：http://localhost:7860
+Then visit: http://localhost:7860
 
-## 🔧 常見問題
+## 🔧 FAQ
 
-### Q: Docker 服務啟動失敗？
+### Q: Docker services failed to start?
 
 ```powershell
-# 查看日誌
+# View logs
 docker-compose logs
 
-# 重新啟動
+# Restart
 docker-compose down
 docker-compose up -d
 ```
 
-### Q: 虛擬環境啟動失敗？
+### Q: Virtual environment failed to start?
 
 ```powershell
-# 如果出現執行政策錯誤
+# If execution policy error occurs
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-# 然後重新啟動虛擬環境
+# Then restart virtual environment
 .\.venv\Scripts\Activate.ps1
 ```
 
-### Q: 資料庫連線失敗？
+### Q: Database connection failed?
 
-確保：
-1. Docker 服務正在運行：`docker-compose ps`
-2. `.env` 中的密碼與 Docker Compose 一致
-3. 等待 PostgreSQL 完全啟動（約 30 秒）
+Ensure:
+1. Docker services are running: `docker-compose ps`
+2. Password in `.env` matches Docker Compose
+3. Wait for PostgreSQL to fully start (approx. 30 seconds)
 
-### Q: Ollama 模型下載很慢？
+### Q: Ollama model download is slow?
 
-這是正常的，模型約 4.7 GB。你可以：
-1. 使用較小的模型：`ollama pull llama3.1:7b`
-2. 或稍後再下載，先測試其他功能
+This is normal, model is approx. 4.7 GB. You can:
+1. Use smaller model: `ollama pull llama3.1:7b`
+2. Or download later, test other functions first
 
-## 📊 驗證系統狀態
+## 📊 Verify System Status
 
 ```powershell
-# 檢查 Docker 服務
+# Check Docker services
 docker-compose ps
 
-# 檢查資料庫連線
+# Check database connection
 python -c "from src.config import settings; print(settings.database.connection_string)"
 
-# 檢查 PDF 儲存目錄
+# Check PDF storage directory
 Get-ChildItem "D:\anti test\ganoderma-papers-rag\data\pdfs" -Recurse
 ```
 
-## 🎯 快速測試流程
+## 🎯 Quick Test Flow
 
-完整測試系統是否正常：
+Fully test if system is normal:
 
 ```powershell
-# 1. 測試爬蟲
+# 1. Test scraper
 python scripts/test_scraper.py
 
-# 2. 檢查下載的 PDF
+# 2. Check downloaded PDF
 Get-ChildItem "data\pdfs\PMC" -Filter "*.pdf"
 
-# 3. 查看資料庫
+# 3. View database
 python -c "from sqlalchemy import create_engine; from src.config import settings; engine = create_engine(settings.database.connection_string); print('Database connected!')"
 ```
 
-## 📚 更多資訊
+## 📚 More Info
 
-- 完整文件：[README.md](README.md)
-- 系統架構：[docs/SYSTEM_OVERVIEW.md](docs/SYSTEM_OVERVIEW.md)
-- 實作計畫：[docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)
+- Full Documentation: [README.md](README.md)
+- System Architecture: [docs/SYSTEM_OVERVIEW.md](docs/SYSTEM_OVERVIEW.md)
+- Implementation Plan: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)
 
 ---
 
-**需要幫助？** 查看 README.md 中的常見問題章節！
+**Need Help?** Check FAQ section in README.md!

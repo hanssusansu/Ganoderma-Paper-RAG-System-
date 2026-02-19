@@ -1,86 +1,86 @@
-# 🧪 測試指南
+# 🧪 Testing Guide
 
-## 📋 測試前檢查
+## 📋 Pre-test Check
 
-在開始測試前，請確認：
-- ✅ 已安裝 Docker Desktop 並正在運行
-- ✅ 已安裝 Python 3.11+
-- ✅ 在 PowerShell 中操作
+Before starting tests, please confirm:
+- ✅ Docker Desktop is installed and running
+- ✅ Python 3.11+ is installed
+- ✅ Operating in PowerShell
 
 ---
 
-## 🚀 測試步驟（約 10 分鐘）
+## 🚀 Test Steps (Approx. 10 Minutes)
 
-### 步驟 1：進入專案目錄
+### Step 1: Enter Project Directory
 
 ```powershell
 cd "D:\anti test\ganoderma-papers-rag"
 ```
 
-### 步驟 2：設定環境變數
+### Step 2: Configure Environment Variables
 
 ```powershell
-# 複製環境變數範例
+# Copy example environment variables
 Copy-Item .env.example .env
 
-# 編輯 .env（可選，使用預設值也可以）
+# Edit .env (Optional, default values work)
 # notepad .env
 ```
 
-> **提示**：如果只是測試，可以直接使用 `.env.example` 的預設值，不需要修改。
+> **Tip**: If just testing, you can use `.env.example` defaults without modification.
 
-### 步驟 3：啟動 Docker 服務
+### Step 3: Start Docker Services
 
 ```powershell
-# 啟動所有服務
+# Start all services
 docker-compose up -d
 
-# 等待 30 秒讓服務完全啟動
+# Wait 30 seconds for services to fully start
 Start-Sleep -Seconds 30
 
-# 檢查服務狀態
+# Check service status
 docker-compose ps
 ```
 
-**預期結果**：你應該看到 4 個服務都在運行（State 為 "Up"）
+**Expected Result**: You should see 4 services running (State is "Up")
 - ✅ ganoderma-postgres
 - ✅ ganoderma-opensearch
 - ✅ ganoderma-redis
 - ✅ ganoderma-ollama
 
-### 步驟 4：建立 Python 虛擬環境
+### Step 4: Create Python Virtual Environment
 
 ```powershell
-# 建立虛擬環境
+# Create virtual environment
 python -m venv .venv
 
-# 啟動虛擬環境
+# Activate virtual environment
 .\.venv\Scripts\Activate.ps1
 
-# 如果出現執行政策錯誤，執行：
+# If execution policy error occurs, run:
 # Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-# 然後重新執行上面的啟動命令
+# Then re-run the activation command above
 ```
 
-**預期結果**：你的命令提示符前面會出現 `(.venv)`
+**Expected Result**: `(.venv)` appears at the start of your command prompt.
 
-### 步驟 5：安裝 Python 套件
+### Step 5: Install Python Packages
 
 ```powershell
-# 安裝依賴套件（約 2-3 分鐘）
+# Install dependencies (Approx. 2-3 minutes)
 pip install -e .
 ```
 
-**預期結果**：看到 "Successfully installed..." 訊息
+**Expected Result**: See "Successfully installed..." message.
 
-### 步驟 6：初始化資料庫
+### Step 6: Initialize Database
 
 ```powershell
-# 建立資料庫表格
+# Create database tables
 python scripts/init_db.py
 ```
 
-**預期結果**：
+**Expected Result**:
 ```
 ✓ Creating papers table...
 ✓ Creating paper_chunks table...
@@ -88,184 +88,184 @@ python scripts/init_db.py
 ✓ Database schema created successfully!
 ```
 
-### 步驟 7：測試爬蟲（重要！）
+### Step 7: Test Scraper (Important!)
 
 ```powershell
-# 執行爬蟲測試
+# Run scraper test
 python scripts/test_scraper.py
 ```
 
-**預期結果**：
+**Expected Result**:
 ```
 ✓ Successfully extracted paper info:
-  Title: 伊朗：臨床試驗顯示...
+  Title: Iran: Clinical trials show...
   Paper URL: https://pmc.ncbi.nlm.nih.gov/articles/PMC11792735/
   Source: PMC
 ✓ Successfully downloaded PDF to: D:\anti test\ganoderma-papers-rag\data\pdfs\PMC\PMC11792735.pdf
 ```
 
-### 步驟 8：驗證 PDF 下載
+### Step 8: Verify PDF Download
 
 ```powershell
-# 檢查下載的 PDF
+# Check downloaded PDF
 Get-ChildItem "data\pdfs\PMC" -Filter "*.pdf"
 ```
 
-**預期結果**：你應該看到至少一個 PDF 檔案
+**Expected Result**: You should see at least one PDF file.
 
 ---
 
-## ✅ 測試成功的標準
+## ✅ Success Criteria
 
-如果你看到以下結果，表示系統運作正常：
+If you see the following results, the system is functioning normally:
 
-1. ✅ Docker 服務全部啟動
-2. ✅ Python 虛擬環境建立成功
-3. ✅ 資料庫表格建立成功
-4. ✅ 爬蟲成功提取論文資訊
-5. ✅ PDF 成功下載到 `data/pdfs/PMC/` 目錄
+1. ✅ All Docker services started
+2. ✅ Python virtual environment created successfully
+3. ✅ Database tables created successfully
+4. ✅ Scraper successfully extracted paper info
+5. ✅ PDF successfully downloaded to `data/pdfs/PMC/` directory
 
 ---
 
-## 🔧 常見問題排除
+## 🔧 Troubleshooting
 
-### 問題 1：Docker 服務啟動失敗
+### Issue 1: Docker Service Failed to Start
 
-**症狀**：`docker-compose ps` 顯示服務 "Exit" 或 "Restarting"
+**Symptom**: `docker-compose ps` shows services "Exit" or "Restarting"
 
-**解決方法**：
+**Solution**:
 ```powershell
-# 查看日誌
+# View logs
 docker-compose logs postgres
 
-# 重新啟動
+# Restart
 docker-compose down
 docker-compose up -d
 ```
 
-### 問題 2：虛擬環境啟動失敗
+### Issue 2: Virtual Environment Failed to Activate
 
-**症狀**：`無法載入檔案...因為這個系統上已停用指令碼執行`
+**Symptom**: `File cannot be loaded because running scripts is disabled on this system.`
 
-**解決方法**：
+**Solution**:
 ```powershell
-# 修改執行政策
+# Change execution policy
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-# 重新啟動虛擬環境
+# Reactivate virtual environment
 .\.venv\Scripts\Activate.ps1
 ```
 
-### 問題 3：資料庫連線失敗
+### Issue 3: Database Connection Failed
 
-**症狀**：`init_db.py` 報錯 "could not connect to server"
+**Symptom**: `init_db.py` error "could not connect to server"
 
-**解決方法**：
+**Solution**:
 ```powershell
-# 確認 PostgreSQL 正在運行
+# Confirm PostgreSQL is running
 docker-compose ps postgres
 
-# 等待更長時間（有時需要 1 分鐘）
+# Wait longer (sometimes needs 1 minute)
 Start-Sleep -Seconds 60
 
-# 重新執行
+# Re-run
 python scripts/init_db.py
 ```
 
-### 問題 4：爬蟲測試失敗
+### Issue 4: Scraper Test Failed
 
-**症狀**：`test_scraper.py` 報錯或無法下載 PDF
+**Symptom**: `test_scraper.py` error or cannot download PDF
 
-**可能原因**：
-1. 網路連線問題
-2. 靈芝新聞網網站結構改變
-3. PDF 連結失效
+**Possible Causes**:
+1. Network connection issue
+2. Ganoderma News website structure changed
+3. PDF link invalid
 
-**解決方法**：
+**Solution**:
 ```powershell
-# 查看詳細錯誤訊息
+# View detailed error message
 python scripts/test_scraper.py
 
-# 如果是網路問題，稍後再試
-# 如果是網站結構問題，需要調整爬蟲程式碼
+# If network issue, try again later
+# If website structure issue, crawler code needs adjustment
 ```
 
 ---
 
-## 📊 進階測試（可選）
+## 📊 Advanced Testing (Optional)
 
-### 測試 1：檢查資料庫內容
+### Test 1: Check Database Content
 
 ```powershell
-# 使用 Python 查詢資料庫
+# Query database using Python
 python -c "from sqlalchemy import create_engine, text; from src.config import settings; engine = create_engine(settings.database.connection_string); with engine.connect() as conn: result = conn.execute(text('SELECT COUNT(*) FROM papers')); print(f'Papers count: {result.scalar()}')"
 ```
 
-### 測試 2：查看 Docker 日誌
+### Test 2: View Docker Logs
 
 ```powershell
-# 查看所有服務日誌
+# View all service logs
 docker-compose logs
 
-# 查看特定服務日誌
+# View specific service log
 docker-compose logs postgres
 docker-compose logs opensearch
 ```
 
-### 測試 3：測試 OpenSearch
+### Test 3: Test OpenSearch
 
 ```powershell
-# 測試 OpenSearch 是否運行
+# Test if OpenSearch is running
 Invoke-WebRequest -Uri "http://localhost:9200" -Method Get
 ```
 
 ---
 
-## 🎯 測試完成後
+## 🎯 After Testing
 
-### 如果測試成功 ✅
+### If Test Successful ✅
 
-恭喜！系統基礎架構運作正常。下一步你可以：
+Congratulations! Basic system infrastructure is working. Next steps:
 
-1. **繼續建構系統**：讓我建立 PDF 處理和 RAG 模組
-2. **手動抓取更多論文**：等我建立 `manual_ingest.py` 腳本
-3. **暫停測試**：隨時可以停止 Docker 服務
+1. **Continue Building**: Let me build PDF processing and RAG modules
+2. **Manually Scrape More Papers**: Wait for me to build `manual_ingest.py` script
+3. **Pause Testing**: Stop Docker services anytime
 
-### 停止服務
+### Stop Services
 
 ```powershell
-# 停止所有 Docker 服務
+# Stop all Docker services
 docker-compose down
 
-# 停用虛擬環境
+# Deactivate virtual environment
 deactivate
 ```
 
-### 重新啟動
+### Restart
 
 ```powershell
-# 啟動服務
+# Start services
 docker-compose up -d
 
-# 啟動虛擬環境
+# Activate virtual environment
 .\.venv\Scripts\Activate.ps1
 ```
 
 ---
 
-## 📝 測試檢查清單
+## 📝 Test Checklist
 
-請按順序完成以下檢查：
+Please complete checks in order:
 
-- [ ] 步驟 1：進入專案目錄
-- [ ] 步驟 2：設定環境變數
-- [ ] 步驟 3：啟動 Docker 服務
-- [ ] 步驟 4：建立 Python 虛擬環境
-- [ ] 步驟 5：安裝 Python 套件
-- [ ] 步驟 6：初始化資料庫
-- [ ] 步驟 7：測試爬蟲
-- [ ] 步驟 8：驗證 PDF 下載
+- [ ] Step 1: Enter project directory
+- [ ] Step 2: Configure environment variables
+- [ ] Step 3: Start Docker services
+- [ ] Step 4: Create Python virtual environment
+- [ ] Step 5: Install Python packages
+- [ ] Step 6: Initialize database
+- [ ] Step 7: Test scraper
+- [ ] Step 8: Verify PDF download
 
 ---
 
-**需要幫助？** 如果遇到任何問題，請告訴我具體的錯誤訊息！
+**Need Help?** Tell me the specific error message!

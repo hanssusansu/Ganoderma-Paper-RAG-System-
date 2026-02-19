@@ -1,82 +1,82 @@
-# Ganoderma Papers RAG 系統架構總覽
+# Ganoderma Papers RAG System Overview
 
-## 🎯 系統目標
+## 🎯 System Goal
 
-建立一個智能的靈芝學術論文 RAG 系統，能夠：
-- ✅ 自動抓取靈芝新聞網**所有專欄**的學術論文
-- ✅ 下載並解析 PDF 文件
-- ✅ 提供專業的文獻引用查詢服務
+Build an intelligent Ganoderma academic paper RAG system capable of:
+- ✅ Automatically scraping academic papers from **all columns** of Ganoderma News
+- ✅ Downloading and parsing PDF documents
+- ✅ Providing professional Q&A service with literature citations
 
 ---
 
-## 📊 資料來源覆蓋
+## 📊 Data Source Coverage
 
-### 靈芝新聞網專欄列表
+### Ganoderma News Column List
 
-| 專欄名稱 | 內容類型 | 預估文章數 | 論文引用率 |
+| Column Name | Content Type | Est. Articles | Paper Citation Rate |
 |---------|---------|-----------|-----------|
-| 🔬 **研究新知** | 最新學術研究 | 150-200 | 95% |
-| 🛡️ **靈芝調節免疫力** | 免疫相關研究 | 50-80 | 80% |
-| 🧬 **天選之材GMI** | GMI 蛋白研究 | 30-50 | 90% |
-| 📰 **靈芝新聞** | 產業新聞 | 100-150 | 20% |
-| 👥 **靈芝與我** | 使用者故事 | 50-80 | 10% |
-| 📅 **活動報導** | 活動報導 | 40-60 | 5% |
-| 📚 **歷史回顧** | 歷史文獻 | 30-50 | 60% |
+| 🔬 **Research News** | Latest Academic Research | 150-200 | 95% |
+| 🛡️ **Immune Regulation** | Immune Research | 50-80 | 80% |
+| 🧬 **GMI** | GMI Protein Research | 30-50 | 90% |
+| 📰 **News** | Industry News | 100-150 | 20% |
+| 👥 **Ganoderma & Me** | User Stories | 50-80 | 10% |
+| 📅 **Event Reports** | Event Reports | 40-60 | 5% |
+| 📚 **Historical Review** | Historical Literature | 30-50 | 60% |
 
-**總計**：約 450-670 篇文章，其中約 **300-400 篇包含學術論文引用**
+**Total**: Approx. 450-670 articles, with **300-400 containing academic paper citations**.
 
 ---
 
-## 🏗️ 系統架構圖
+## 🏗️ System Architecture
 
 ```mermaid
 graph TB
-    subgraph "資料來源層"
-        A1[靈芝新聞網<br/>研究新知]
-        A2[靈芝新聞網<br/>靈芝調節免疫力]
-        A3[靈芝新聞網<br/>天選之材GMI]
-        A4[其他專欄]
+    subgraph "Data Source Layer"
+        A1[Ganoderma News<br/>Research News]
+        A2[Ganoderma News<br/>Immune Regulation]
+        A3[Ganoderma News<br/>GMI]
+        A4[Other Columns]
     end
     
-    subgraph "爬蟲層"
-        B[多專欄爬蟲<br/>ganoderma_news.py]
-        C[論文連結提取器]
-        D[智能過濾器<br/>僅保留含論文引用的文章]
+    subgraph "Scraper Layer"
+        B[Multi-Column Scraper<br/>ganoderma_news.py]
+        C[Paper Link Extractor]
+        D[Smart Filter<br/>Keep only articles with paper citations]
     end
     
-    subgraph "下載層"
-        E[PDF 下載器]
-        F1[PMC 下載器]
-        F2[PubMed 下載器]
-        F3[arXiv 下載器]
-        F4[DOI 解析器]
+    subgraph "Download Layer"
+        E[PDF Downloader]
+        F1[PMC Downloader]
+        F2[PubMed Downloader]
+        F3[arXiv Downloader]
+        F4[DOI Parser]
     end
     
-    subgraph "儲存層"
-        G1[本地儲存<br/>data/pdfs/]
-        G2[雲端儲存<br/>可選]
+    subgraph "Storage Layer"
+        G1[Local Storage<br/>data/pdfs/]
+        G2[Cloud Storage<br/>Optional]
     end
     
-    subgraph "處理層"
-        H[PDF 解析器<br/>PyMuPDF]
-        I[文本分塊器<br/>智能章節分割]
-        J[向量化<br/>Jina Embeddings]
+    subgraph "Processing Layer"
+        H[PDF Parser<br/>PyMuPDF]
+        I[Text Chunker<br/>Smart Section Splitting]
+        J[Vectorization<br/>Jina Embeddings]
     end
     
-    subgraph "資料庫層"
-        K[(PostgreSQL<br/>論文元數據)]
-        L[(OpenSearch<br/>向量資料庫)]
+    subgraph "Database Layer"
+        K[(PostgreSQL<br/>Paper Metadata)]
+        L[(OpenSearch<br/>Vector Database)]
     end
     
-    subgraph "RAG 查詢層"
-        M[混合檢索器<br/>BM25 + Vector]
-        N[Ollama LLM<br/>答案生成]
-        O[引用格式化器<br/>APA/MLA/Chicago]
+    subgraph "RAG Query Layer"
+        M[Hybrid Retriever<br/>BM25 + Vector]
+        N[Ollama LLM<br/>Answer Generation]
+        O[Citation Formatter<br/>APA/MLA/Chicago]
     end
     
-    subgraph "使用者介面"
-        P[Gradio 網頁介面]
-        Q[FastAPI 端點]
+    subgraph "User Interface"
+        P[Gradio Web UI]
+        Q[FastAPI Endpoints]
     end
     
     A1 --> B
@@ -94,7 +94,7 @@ graph TB
     F2 --> G1
     F3 --> G1
     F4 --> G1
-    G1 -.備份.-> G2
+    G1 -.Backup.-> G2
     G1 --> H
     H --> I
     I --> J
@@ -110,279 +110,280 @@ graph TB
 
 ---
 
-## 💾 儲存空間規劃
+## 💾 Storage Planning
 
-### 詳細估算
+### Detailed Estimation
 
-#### 1. PDF 檔案儲存
+#### 1. PDF File Storage
 ```
-假設：
-- 總文章數：450-670 篇
-- 含論文引用：300-400 篇（約 60%）
-- 成功下載 PDF：200-300 篇（約 70%）
-- 平均 PDF 大小：3 MB
+Assumptions:
+- Total articles: 450-670
+- With paper citations: 300-400 (approx. 60%)
+- Successfully downloaded PDF: 200-300 (approx. 70%)
+- Avg PDF size: 3 MB
 
-計算：
-300 篇 × 3 MB = 900 MB ≈ 1 GB
-```
-
-#### 2. 資料庫儲存
-```
-PostgreSQL：
-- 論文元數據：300 篇 × 50 KB = 15 MB
-- 文本塊：300 篇 × 8 塊 × 20 KB = 48 MB
-- 索引和其他：約 50 MB
-總計：約 113 MB ≈ 120 MB
+Calculation:
+300 papers × 3 MB = 900 MB ≈ 1 GB
 ```
 
-#### 3. 向量資料庫
+#### 2. Database Storage
 ```
-OpenSearch：
-- 向量數據：2,400 塊 × 1024 維 × 4 bytes = 9.8 MB
-- 文本內容：2,400 塊 × 20 KB = 48 MB
-- 索引結構：約 200 MB
-總計：約 258 MB ≈ 300 MB
-```
-
-#### 4. Docker 容器
-```
-- PostgreSQL 映像：約 400 MB
-- OpenSearch 映像：約 800 MB
-- Redis 映像：約 50 MB
-- Ollama + 模型：約 5 GB
-- 應用程式映像：約 500 MB
-總計：約 6.75 GB
+PostgreSQL:
+- Paper Metadata: 300 papers × 50 KB = 15 MB
+- Text Chunks: 300 papers × 8 chunks × 20 KB = 48 MB
+- Indexes and others: approx. 50 MB
+Total: approx. 113 MB ≈ 120 MB
 ```
 
-### 📦 總儲存需求
+#### 3. Vector Database
+```
+OpenSearch:
+- Vector Data: 2,400 chunks × 1024 dim × 4 bytes = 9.8 MB
+- Text Content: 2,400 chunks × 20 KB = 48 MB
+- Index Structure: approx. 200 MB
+Total: approx. 258 MB ≈ 300 MB
+```
 
-| 項目 | 大小 | 說明 |
+#### 4. Docker Containers
+```
+- PostgreSQL Image: approx. 400 MB
+- OpenSearch Image: approx. 800 MB
+- Redis Image: approx. 50 MB
+- Ollama + Model: approx. 5 GB
+- Application Image: approx. 500 MB
+Total: approx. 6.75 GB
+```
+
+### 📦 Total Storage Requirement
+
+| Item | Size | Description |
 |------|------|------|
-| PDF 檔案 | 1 GB | 論文原文 |
-| PostgreSQL | 120 MB | 元數據和文本 |
-| OpenSearch | 300 MB | 向量和索引 |
-| Docker 容器 | 6.75 GB | 系統映像 |
-| **總計** | **約 8.2 GB** | **完整系統** |
+| PDF Files | 1 GB | Original Papers |
+| PostgreSQL | 120 MB | Metadata and Text |
+| OpenSearch | 300 MB | Vectors and Indexes |
+| Docker Containers | 6.75 GB | System Images |
+| **Total** | **Approx 8.2 GB** | **Complete System** |
 
 > [!NOTE]
-> **實際使用建議**
-> - 💻 **本地開發**：8-10 GB 硬碟空間即可
-> - 🚀 **生產環境**：建議預留 15-20 GB（含日誌和備份）
-> - ☁️ **雲端儲存**：目前不需要，本地儲存完全足夠
+> **Usage Recommendations**
+> - 💻 **Local Development**: 8-10 GB disk space sufficient
+> - 🚀 **Production**: Recommend reserving 15-20 GB (incl. logs and backups)
+> - ☁️ **Cloud Storage**: Not currently needed, local storage is sufficient
 
 ---
 
-## 🔄 資料處理流程
+## 🔄 Data Processing Flow
 
-### 階段 1：資料擷取（每週執行）
+### Phase 1: Data Ingestion (Weekly)
 
 ```mermaid
 sequenceDiagram
     participant Airflow
-    participant Scraper as 爬蟲
-    participant GNews as 靈芝新聞網
-    participant Downloader as PDF下載器
-    participant Storage as 本地儲存
+    participant Scraper
+    participant GNews as GanodermaNews
+    participant Downloader as PDFDownloader
+    participant Storage as LocalStorage
     
-    Airflow->>Scraper: 啟動抓取任務
-    Scraper->>GNews: 抓取所有專欄文章
-    GNews-->>Scraper: 返回文章列表
-    Scraper->>Scraper: 提取論文連結
-    Scraper->>Scraper: 智能過濾（僅保留含論文的文章）
-    Scraper->>Downloader: 傳遞論文連結清單
-    Downloader->>Downloader: 識別論文來源（PMC/PubMed/arXiv）
-    Downloader->>Downloader: 下載 PDF（3次重試）
-    Downloader->>Storage: 儲存 PDF 到 data/pdfs/
-    Storage-->>Airflow: 完成
+    Airflow->>Scraper: Start scraping task
+    Scraper->>GNews: Scrape all column articles
+    GNews-->>Scraper: Return article list
+    Scraper->>Scraper: Extract paper links
+    Scraper->>Scraper: Smart filter (keep only with papers)
+    Scraper->>Downloader: Pass paper link list
+    Downloader->>Downloader: Identify paper source (PMC/PubMed/arXiv)
+    Downloader->>Downloader: Download PDF (3 retries)
+    Downloader->>Storage: Save PDF to data/pdfs/
+    Storage-->>Airflow: Complete
 ```
 
-### 階段 2：資料處理（接續執行）
+### Phase 2: Data Processing (Sequential)
 
 ```mermaid
 sequenceDiagram
     participant Airflow
-    participant Parser as PDF解析器
-    participant Chunker as 分塊器
-    participant Embedder as 向量化
+    participant Parser as PDFParser
+    participant Chunker
+    participant Embedder
     participant DB as PostgreSQL
     participant OS as OpenSearch
     
-    Airflow->>Parser: 解析新下載的 PDF
-    Parser->>Parser: 提取文字、結構、元數據
-    Parser->>Chunker: 傳遞解析結果
-    Chunker->>Chunker: 按章節智能分塊
-    Chunker->>Embedder: 傳遞文本塊
-    Embedder->>Embedder: 生成向量（Jina v3）
-    Embedder->>DB: 儲存元數據和文本
-    Embedder->>OS: 儲存向量和內容
-    OS-->>Airflow: 完成索引
+    Airflow->>Parser: Parse new downloaded PDF
+    Parser->>Parser: Extract text, structure, metadata
+    Parser->>Chunker: Pass parse results
+    Chunker->>Chunker: Smart chunking by section
+    Chunker->>Embedder: Pass text chunks
+    Embedder->>Embedder: Generate vectors (Jina v3)
+    Embedder->>DB: Save metadata and text
+    Embedder->>OS: Save vectors and content
+    OS-->>Airflow: Indexing complete
 ```
 
-### 階段 3：使用者查詢（即時）
+### Phase 3: User Query (Real-time)
 
 ```mermaid
 sequenceDiagram
-    participant User as 使用者
+    participant User
     participant Gradio
     participant API as FastAPI
-    participant Retriever as 檢索器
+    participant Retriever
     participant OS as OpenSearch
     participant LLM as Ollama
-    participant Formatter as 引用格式化
+    participant Formatter as CitationFormatter
     
-    User->>Gradio: 輸入問題
+    User->>Gradio: Input question
     Gradio->>API: POST /ask-agentic
-    API->>Retriever: 執行混合檢索
-    Retriever->>OS: BM25 + 向量搜尋
-    OS-->>Retriever: 返回 Top-10 相關塊
-    Retriever->>LLM: 構建 Prompt + Context
-    LLM->>LLM: 生成答案
-    LLM-->>Formatter: 返回答案
-    Formatter->>Formatter: 格式化引用（APA）
-    Formatter-->>API: 返回完整回應
-    API-->>Gradio: JSON 回應
-    Gradio-->>User: 顯示答案 + 來源
+    API->>Retriever: Execute hybrid retrieval
+    Retriever->>OS: BM25 + Vector Search
+    OS-->>Retriever: Return Top-10 relevant chunks
+    Retriever->>LLM: Construct Prompt + Context
+    LLM->>LLM: Generate answer
+    LLM-->>Formatter: Return answer
+    Formatter->>Formatter: Format citation (APA)
+    Formatter-->>API: Return full response
+    API-->>Gradio: JSON response
+    Gradio-->>User: Display answer + sources
 ```
 
 ---
 
-## 🎨 使用者介面預覽
+## 🎨 User Interface Preview
 
-### Gradio 介面功能
+### Gradio Interface Features
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  🍄 靈芝學術論文智能問答系統                              │
+│  🍄 Ganoderma Academic Paper Smart Q&A System            │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
-│  📝 請輸入您的問題：                                      │
+│  📝 Please enter your question:                          │
 │  ┌───────────────────────────────────────────────────┐  │
-│  │ 靈芝對假牙性口腔炎有什麼療效？                      │  │
+│  │ What are the therapeutic effects of Ganoderma...    │  │
 │  └───────────────────────────────────────────────────┘  │
 │                                                         │
-│  [🔍 提交查詢]  [🔄 清除]                                │
+│  [🔍 Submit Query]  [🔄 Clear]                           │
 │                                                         │
 ├─────────────────────────────────────────────────────────┤
-│  💬 回答：                                               │
+│  💬 Answer:                                              │
 │  ┌───────────────────────────────────────────────────┐  │
-│  │ 根據 Pakravan 等人 (2024) 在 Frontiers in        │  │
-│  │ Dentistry 發表的臨床研究，含有 5% 靈芝萃取物的    │  │
-│  │ 凝膠能有效改善假牙性口腔炎...                     │  │
+│  │ According to Pakravan et al. (2024) in Frontiers  │  │
+│  │ in Dentistry, gel containing 5% Ganoderma extract │  │
+│  │ can effectively improve denture stomatitis...     │  │
 │  └───────────────────────────────────────────────────┘  │
 │                                                         │
 ├─────────────────────────────────────────────────────────┤
-│  📚 參考文獻（3 篇）                                     │
+│  📚 References (3 papers)                                │
 │  ┌───────────────────────────────────────────────────┐  │
 │  │ 1. Pakravan F, et al. (2024)                      │  │
 │  │    Antifungal Efficacy of Ganoderma lucidum...    │  │
-│  │    [📄 查看 PDF] [🔗 原文連結]                     │  │
+│  │    [📄 View PDF] [🔗 Original Link]                │  │
 │  │                                                   │  │
 │  │ 2. Chen X, et al. (2023)                          │  │
 │  │    Anti-inflammatory effects of...                │  │
-│  │    [📄 查看 PDF] [🔗 原文連結]                     │  │
+│  │    [📄 View PDF] [🔗 Original Link]                │  │
 │  └───────────────────────────────────────────────────┘  │
+│                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 部署選項
+## 🚀 Deployment Options
 
-### 選項 1：本地部署（推薦）
+### Option 1: Local Deployment (Recommended)
 
-**優點**：
-- ✅ 完全免費
-- ✅ 資料隱私
-- ✅ 快速存取
-- ✅ 離線可用
+**Pros**:
+- ✅ Completely free
+- ✅ Data privacy
+- ✅ Fast access
+- ✅ Offline available
 
-**需求**：
+**Requirements**:
 - Windows 10/11
-- 16 GB RAM（建議）
-- 20 GB 硬碟空間
+- 16 GB RAM (Recommended)
+- 20 GB Disk Space
 - Docker Desktop
 
-**啟動命令**：
+**Start Command**:
 ```bash
 cd D:\anti test\ganoderma-papers-rag
 docker-compose up -d
 ```
 
-### 選項 2：混合部署
+### Option 2: Hybrid Deployment
 
-**本地**：
-- PDF 檔案
+**Local**:
+- PDF Files
 - PostgreSQL
 - OpenSearch
 
-**雲端**：
-- Gradio 介面（Hugging Face Spaces）
-- API 服務（Railway / Render）
+**Cloud**:
+- Gradio Interface (Hugging Face Spaces)
+- API Service (Railway / Render)
 
-### 選項 3：完全雲端（未來擴展）
+### Option 3: Full Cloud (Future Expansion)
 
-**適用場景**：
-- 需要公開分享
-- 多人協作使用
-- 資料量超過 50 GB
+**Scenarios**:
+- Public sharing required
+- Collaborative use
+- Data volume > 50 GB
 
-**雲端服務建議**：
-- **PDF 儲存**：AWS S3 / Google Cloud Storage
-- **資料庫**：AWS RDS / Google Cloud SQL
-- **向量資料庫**：Pinecone / Weaviate Cloud
-- **LLM**：OpenAI API / Anthropic Claude
+**Cloud Service Recommendations**:
+- **PDF Storage**: AWS S3 / Google Cloud Storage
+- **Database**: AWS RDS / Google Cloud SQL
+- **Vector Database**: Pinecone / Weaviate Cloud
+- **LLM**: OpenAI API / Anthropic Claude
 
 ---
 
-## 📈 系統效能預估
+## 📈 System Performance Estimation
 
-| 指標 | 預估值 | 說明 |
+| Metric | Estimate | Description |
 |------|--------|------|
-| 論文數量 | 200-300 篇 | 成功下載的 PDF |
-| 文本塊數 | 1,600-2,400 塊 | 平均每篇 8 塊 |
-| 查詢延遲 | 2-5 秒 | 檢索 + 生成 |
-| 檢索準確率 | 85-90% | Top-10 相關性 |
-| 答案品質 | 高 | 基於真實論文內容 |
+| Paper Count | 200-300 | Successfully downloaded PDFs |
+| Chunk Count | 1,600-2,400 | Avg 8 chunks per paper |
+| Query Latency | 2-5 sec | Retrieval + Generation |
+| Retrieval Accuracy | 85-90% | Top-10 Relevance |
+| Answer Quality | High | Based on actual paper content |
 
 ---
 
-## 🔧 後續優化方向
+## 🔧 Future Optimization Directions
 
-1. **多模態支援**
-   - 提取論文中的圖表和表格
-   - 視覺化研究結果
+1. **Multi-modal Support**
+   - Extract charts and tables from papers
+   - Visualize research results
 
-2. **自動摘要**
-   - 為每篇論文生成繁體中文摘要
-   - 關鍵發現提取
+2. **Auto Summarization**
+   - Generate summaries for each paper
+   - Key finding extraction
 
-3. **知識圖譜**
-   - 建立論文之間的引用關係
-   - 研究主題演化分析
+3. **Knowledge Graph**
+   - Build citation relationships between papers
+   - Research topic evolution analysis
 
-4. **趨勢分析**
-   - 靈芝研究熱門主題
-   - 時間序列分析
+4. **Trend Analysis**
+   - Popular Ganoderma research topics
+   - Time series analysis
 
-5. **多語言支援**
-   - 支援英文查詢
-   - 雙語回答
+5. **Multi-language Support**
+   - Support English queries
+   - Bilingual answers
 
 ---
 
-## ✅ 下一步行動
+## ✅ Next Steps
 
-1. **確認需求**：確認系統設計符合你的需求
-2. **開始建構**：建立專案目錄和基礎架構
-3. **開發爬蟲**：實作多專欄爬蟲
-4. **測試驗證**：確保資料品質
-5. **部署上線**：啟動完整系統
+1. **Confirm Requirements**: Ensure system design meets your needs
+2. **Start Building**: Create project directory and infrastructure
+3. **Develop Scraper**: Implement multi-column scraper
+4. **Test & Verify**: Ensure data quality
+5. **Deploy**: Start full system
 
 ---
 
 > [!TIP]
-> **建議從小規模開始**
-> 1. 先抓取「研究新知」專欄（約 150 篇）
-> 2. 驗證系統運作正常
-> 3. 再逐步加入其他專欄
-> 4. 這樣可以更快看到成果，也方便除錯！
+> **Recommend starting small**
+> 1. First scrape "Research News" (approx. 150 papers)
+> 2. Verify system works
+> 3. Gradually add other columns
+> 4. This allows seeing results faster and easier debugging!

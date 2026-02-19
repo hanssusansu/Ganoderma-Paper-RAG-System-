@@ -45,7 +45,7 @@ class RAGGenerator:
         """
         if not context_chunks:
             logger.warning("No context chunks provided")
-            return "抱歉，我找不到相關的資訊來回答您的問題。"
+            return "Sorry, I cannot find relevant information to answer your question."
         
         # Build context
         context = self._build_context(context_chunks, max_context_length)
@@ -62,7 +62,7 @@ class RAGGenerator:
         except requests.exceptions.ConnectionError:
             # Ollama not available, return context summary instead
             logger.warning("Ollama not available, returning context summary")
-            return self._generate_fallback_answer(query, context_chunks, error_msg=f"無法自 {self.api_url} 連線")
+            return self._generate_fallback_answer(query, context_chunks, error_msg=f"Cannot connect to {self.api_url}")
         
         except Exception as e:
             logger.error(f"Error generating answer: {e}")
@@ -80,17 +80,17 @@ class RAGGenerator:
         Returns:
             Fallback answer
         """
-        error_info = f"（錯誤詳情: {error_msg}）" if error_msg else ""
+        error_info = f"(Error details: {error_msg})" if error_msg else ""
         answer_parts = [
-            f"根據檢索到的 {len(chunks)} 個相關段落，以下是相關內容摘要：\n",
-            f"（註：Ollama 服務目前不可用，顯示原始檢索內容）{error_info}\n"
+            f"Based on {len(chunks)} retrieved paragraphs, here is the summary:\n",
+            f"(Note: Ollama service is currently unavailable, showing raw retrieval content) {error_info}\n"
         ]
         
         for i, chunk in enumerate(chunks[:3], 1):  # Show top 3
-            section = chunk.get('section', '未知章節')
+            section = chunk.get('section', 'Unknown Section')
             content = chunk['content'][:300] + "..." if len(chunk['content']) > 300 else chunk['content']
             
-            answer_parts.append(f"\n**段落 {i}** ({section}):\n{content}\n")
+            answer_parts.append(f"\n**Paragraph {i}** ({section}):\n{content}\n")
         
         return "\n".join(answer_parts)
     
@@ -125,22 +125,22 @@ class RAGGenerator:
             ref_id = paper_map[paper_id]
             
             # Add header with reference ID
-            header = f"【文獻 {ref_id}】(ID: {paper_id})"
+            header = f"【Reference {ref_id}】(ID: {paper_id})"
             
             # Add APA Citation for LLM to see
             citation = chunk.get('metadata', {}).get('citation_str', None)
             if citation:
-                header += f"\n[引用資訊: {citation}]"
+                header += f"\n[Citation: {citation}]"
 
             # Add AI Metadata if available
             part_used = chunk.get('metadata', {}).get('ai_part_used', 'Unknown')
             extraction = chunk.get('metadata', {}).get('ai_extraction', 'Unknown')
             
             if part_used != 'Unknown' or extraction != 'Unknown':
-                header += f"\n[部位: {part_used}] [萃取法: {extraction}]"
+                header += f"\n[Part: {part_used}] [Extraction: {extraction}]"
             
             if section:
-                header += f" - 節錄自: {section}"
+                header += f" - From section: {section}"
             
             part = f"{header}\n{content}"
             
@@ -159,50 +159,50 @@ class RAGGenerator:
         Build prompt for LLM.
         """
         prompt = f"""[INST] <<SYS>>
-你是一個專業的「靈芝學術圖書館」研究助手。你的角色是客觀地提供文獻摘要，而不是推銷產品或提供醫療建議。
+You are a professional "Ganoderma Academic Library" research assistant. Your role is to objectively provide literature summaries, NOT to promote products or provide medical advice.
 
-**嚴格遵守以下規則 (法律合規性要求)**：
+**Strictly follow these rules (Legal Compliance Requirements)**:
 
-1. **🚫 絕對禁止詞彙**：
-   - 嚴禁使用「功效」、「療效」、「治療」、「改善」、「治癒」、「有效」等涉及醫療效能的詞彙。
-   - **替代用語**：請使用「研究指出相關性」、「探討其潛力」、「文獻記載之生物活性」、「實驗結果顯示」、「具有...之特性」等學術中性用語。
-   - 例如：不要說「靈芝可以治療癌症」，要說「文獻探討了靈芝在抗腫瘤研究中的生物活性」。
+1. **🚫 PROHIBITED TERMS**:
+   - Strictly FORBIDDEN to use words involving medical efficacy such as "cure", "treat", "heal", "effective for", etc.
+   - **Alternative Wording**: Use academic neutral terms like "studies suggest a correlation", "explore potential", "documented biological activity", "experimental results show", "possesses properties of...".
+   - Example: Do NOT say "Ganoderma can treat cancer", SAY "Literature explores the biological activity of Ganoderma in anti-tumor research".
 
-2. **📚 學術定位**：
-   - 你是「學術圖書館員」，不是醫生或藥師。只陳述文獻內容，不給予建議。
-   - 必須強調這是「實驗結果」或「文獻記載」。
+2. **📚 Academic Positioning**:
+   - You are a "Librarian", not a doctor or pharmacist. Only state literature content, do not give advice.
+   - Must emphasize that these are "experimental results" or "literature records".
 
-3. **引用格式**：
-   - 引用時，請直接在句子後面加上編號，例如：「...研究顯示其生物活性 [1]。」
-   - **不要**使用原文的引用編號 (如 (15), [12])。只能使用我賦予的【文獻 x】編號。
-   - **參考文獻列表規則 (重要)**：
-     - **只列出你在回答中真正引用到的文獻**。
-     - 如果你只用了 [1] 和 [3]，參考文獻就只能列出 1 和 3。
-     - 格式 (使用 context 提供的 [引用資訊])：
-       參考文獻：
-       1. Author, A. A. et al. (Year). Title... - [部位: xxx] [萃取: xxx]
-       (若無詳細引用資訊，則使用 PMC ID)
+3. **Citation Format**:
+   - When citing, add the number directly after the sentence, e.g., "...studies show its biological activity [1]."
+   - **DO NOT** use original citation numbers (like (15), [12]). Only use the 【Reference x】 numbers I assigned.
+   - **Reference List Rules (Important)**:
+     - **Only list references you actually cited in your answer**.
+     - If you only used [1] and [3], the reference list should only list 1 and 3.
+     - Format (Use [Citation] provided in context):
+       References:
+       1. Author, A. A. et al. (Year). Title... - [Part: xxx] [Extraction: xxx]
+       (If detailed citation info is missing, use PMC ID)
 
-4. **語言策略**：
-   - **主要敘述**必須使用通順的**繁體中文**。
-   - **專有名詞**（如化學成分、特定蛋白質、菌種名）如果沒有通用的中文翻譯，**可以使用英文**，或採用「中文(英文)」的格式。
+4. **Language Strategy**:
+   - **Main narrative** must be in **English**.
+   - **Proper Nouns** (like chemical components, proteins) can remain in English.
 
-5. **產品關聯性檢核 (重要)**：
-   - 請特別留意文獻標示的 [部位] (子實體/菌絲體) 與 [萃取法]。
-   - 若文獻使用的是「注射」或「純化物」，請勿直接推論為「口服」的效果。
-   - 回答時若能區分部位或萃取法（例如：「這項針對子實體水萃取物的研究顯示...」），將更具專業度。
+5. **Product Relevance Check (Important)**:
+   - Pay special attention to the [Part] (Fruiting Body/Mycelium) and [Extraction] method marked in the literature.
+   - If the literature uses "injection" or "purified compounds", DO NOT infer "oral" effects.
+   - It improves professionalism if you can distinguish parts or extraction methods (e.g., "This study on fruiting body water extract shows...").
 
-6. **免責聲明**：
-   - 在回答的開頭或結尾，適當提醒「本內容僅為學術文獻摘要，不代表醫療建議」。
+6. **Disclaimer**:
+   - At the beginning or end of the answer, appropriately remind "This content is a summary of academic literature and does not constitute medical advice".
 
 <</SYS>>
 
-檢索到的文獻資料：
+Retrieved Literature Data:
 {context}
 
-使用者問題："{query}"
+User Question: "{query}"
 
-請以「靈芝學術圖書館員」的身分，用繁體中文回答上述問題，嚴格遵守合規性用語，避免醫療宣稱，並附上來源引用：
+Please answer the above question in English as a "Ganoderma Academic Librarian", strictly adhering to compliance terminology, avoiding medical claims, and attaching source citations:
 [/INST]"""
         
         return prompt
@@ -243,7 +243,7 @@ class RAGGenerator:
         
         except requests.exceptions.ConnectionError:
             logger.error(f"Cannot connect to Ollama at {self.ollama_host}")
-            return "無法連接到 Ollama 服務。請確認 Ollama 正在運行。"
+            return "Cannot connect to Ollama service. Please confirm Ollama is running."
         except Exception as e:
             logger.error(f"Error calling Ollama: {e}")
             raise
@@ -265,8 +265,8 @@ def main():
     
     answer = generator.generate_answer(query, test_chunks)
     
-    print(f"\n問題: {query}")
-    print(f"\n答案:\n{answer}")
+    print(f"\nQuestion: {query}")
+    print(f"\nAnswer:\n{answer}")
 
 
 if __name__ == "__main__":

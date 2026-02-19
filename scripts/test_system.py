@@ -16,36 +16,36 @@ import json
 def test_scraper_basic():
     """Test basic scraper functionality."""
     logger.info("=" * 60)
-    logger.info("測試 1: 基本爬蟲功能")
+    logger.info("Test 1: Basic Scraper Functionality")
     logger.info("=" * 60)
     
     scraper = GanodermaScraper()
     
-    # 測試文章 URL
+    # Test article URL (Ensure this URL is still valid or use a representative one)
     test_url = "https://www.ganodermanews.com/index.php/%E7%A0%94%E7%A9%B6%E6%96%B0%E7%9F%A5/2020-2029/747-%E4%BC%8A%E6%9C%97%EF%BC%9A%E8%87%A8%E5%BA%8A%E8%A9%A6%E9%A9%97%E9%A1%AF%E7%A4%BA%EF%BC%8C%E9%9D%88%E8%8A%9D%E5%87%9D%E8%86%A0%E5%8F%AF%E5%8A%A0%E9%80%9F%E6%94%B9%E5%96%84%E5%81%87%E7%89%99%E6%80%A7%E5%8F%A3%E8%85%94%E7%82%8E.html"
     
     try:
         paper_info = scraper.extract_paper_links(test_url)
         
         if paper_info:
-            logger.success("✓ 成功提取論文資訊")
-            logger.info(f"  文章標題: {paper_info['article_title']}")
-            logger.info(f"  論文 URL: {paper_info['paper_url']}")
-            logger.info(f"  論文來源: {paper_info['paper_source']}")
-            logger.info(f"  發布日期: {paper_info.get('published_date', 'N/A')}")
+            logger.success("✓ Successfully extracted paper info")
+            logger.info(f"  Article Title: {paper_info['article_title']}")
+            logger.info(f"  Paper URL: {paper_info['paper_url']}")
+            logger.info(f"  Paper Source: {paper_info['paper_source']}")
+            logger.info(f"  Published Date: {paper_info.get('published_date', 'N/A')}")
             return paper_info
         else:
-            logger.error("✗ 無法提取論文資訊")
+            logger.error("✗ Failed to extract paper info")
             return None
     except Exception as e:
-        logger.error(f"✗ 爬蟲測試失敗: {e}")
+        logger.error(f"✗ Scraper test failed: {e}")
         return None
 
 
 def test_pdf_url_generation():
     """Test PDF URL generation without downloading."""
     logger.info("\n" + "=" * 60)
-    logger.info("測試 2: PDF URL 生成")
+    logger.info("Test 2: PDF URL Generation")
     logger.info("=" * 60)
     
     downloader = PDFDownloader()
@@ -60,63 +60,63 @@ def test_pdf_url_generation():
         if pdf_url:
             logger.success(f"✓ {source}: {pdf_url}")
         else:
-            logger.warning(f"✗ {source}: 無法生成 PDF URL")
+            logger.warning(f"✗ {source}: Failed to generate PDF URL")
 
 
 def test_storage_structure():
     """Test storage directory structure."""
     logger.info("\n" + "=" * 60)
-    logger.info("測試 3: 儲存目錄結構")
+    logger.info("Test 3: Storage Directory Structure")
     logger.info("=" * 60)
     
     storage_path = Path("D:/anti test/ganoderma-papers-rag/data/pdfs")
     
-    # 建立測試目錄
+    # Create test directories
     for source in ["PMC", "PubMed", "arXiv", "DOI"]:
         source_dir = storage_path / source
         source_dir.mkdir(parents=True, exist_ok=True)
-        logger.success(f"✓ 建立目錄: {source_dir}")
+        logger.success(f"✓ Created directory: {source_dir}")
     
-    # 檢查目錄
+    # Check directories
     if storage_path.exists():
         subdirs = [d.name for d in storage_path.iterdir() if d.is_dir()]
-        logger.info(f"  現有子目錄: {', '.join(subdirs)}")
+        logger.info(f"  Existing subdirectories: {', '.join(subdirs)}")
     else:
-        logger.error(f"✗ 儲存路徑不存在: {storage_path}")
+        logger.error(f"✗ Storage path does not exist: {storage_path}")
 
 
 def test_config_loading():
     """Test configuration loading."""
     logger.info("\n" + "=" * 60)
-    logger.info("測試 4: 配置載入")
+    logger.info("Test 4: Configuration Loading")
     logger.info("=" * 60)
     
     try:
         from src.config import settings
         
-        logger.success("✓ 配置載入成功")
-        logger.info(f"  資料庫 URL: {settings.database_url}")
+        logger.success("✓ Configuration loaded successfully")
+        logger.info(f"  Database URL: {settings.database_url}")
         logger.info(f"  OpenSearch URL: {settings.opensearch_url}")
         logger.info(f"  Redis URL: {settings.redis_url}")
         logger.info(f"  Ollama Host: {settings.ollama_host}")
-        logger.info(f"  PDF 儲存路徑: {settings.pdf_storage_path}")
-        logger.info(f"  爬蟲延遲: {settings.scraper_delay_seconds} 秒")
+        logger.info(f"  PDF Storage Path: {settings.pdf_storage_path}")
+        logger.info(f"  Scraper Delay: {settings.scraper_delay_seconds} seconds")
         return True
     except Exception as e:
-        logger.error(f"✗ 配置載入失敗: {e}")
+        logger.error(f"✗ Configuration loading failed: {e}")
         return False
 
 
 def test_database_connection():
     """Test database connection (via Docker)."""
     logger.info("\n" + "=" * 60)
-    logger.info("測試 5: 資料庫連線（透過 Docker）")
+    logger.info("Test 5: Database Connection (via Docker)")
     logger.info("=" * 60)
     
     import subprocess
     
     try:
-        # 測試 PostgreSQL
+        # Test PostgreSQL
         result = subprocess.run(
             ["docker", "exec", "ganoderma-postgres", "pg_isready", "-U", "postgres"],
             capture_output=True,
@@ -125,11 +125,11 @@ def test_database_connection():
         )
         
         if result.returncode == 0:
-            logger.success("✓ PostgreSQL 連線正常")
+            logger.success("✓ PostgreSQL connection normal")
         else:
-            logger.error(f"✗ PostgreSQL 連線失敗: {result.stderr}")
+            logger.error(f"✗ PostgreSQL connection failed: {result.stderr}")
         
-        # 測試表格
+        # Test Table
         result = subprocess.run(
             ["docker", "exec", "ganoderma-postgres", "psql", "-U", "postgres", 
              "-d", "ganoderma_papers", "-c", "SELECT COUNT(*) FROM papers;"],
@@ -139,19 +139,19 @@ def test_database_connection():
         )
         
         if result.returncode == 0:
-            logger.success("✓ papers 表格可訪問")
+            logger.success("✓ papers table accessible")
             logger.info(f"  {result.stdout.strip()}")
         else:
-            logger.error(f"✗ 表格訪問失敗: {result.stderr}")
+            logger.error(f"✗ Table access failed: {result.stderr}")
             
     except Exception as e:
-        logger.error(f"✗ 資料庫測試失敗: {e}")
+        logger.error(f"✗ Database test failed: {e}")
 
 
 def save_test_results(paper_info):
     """Save test results to file."""
     logger.info("\n" + "=" * 60)
-    logger.info("儲存測試結果")
+    logger.info("Saving Test Results")
     logger.info("=" * 60)
     
     if paper_info:
@@ -161,44 +161,44 @@ def save_test_results(paper_info):
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(paper_info, f, ensure_ascii=False, indent=2)
         
-        logger.success(f"✓ 測試結果已儲存: {output_file}")
+        logger.success(f"✓ Test results saved: {output_file}")
     else:
-        logger.warning("✗ 沒有測試結果可儲存")
+        logger.warning("✗ No test results to save")
 
 
 def main():
     """Run all tests."""
     logger.info("\n" + "🧪 " * 20)
-    logger.info("Ganoderma Papers RAG 系統測試")
+    logger.info("Ganoderma Papers RAG System Test")
     logger.info("🧪 " * 20 + "\n")
     
-    # 測試 1: 基本爬蟲功能
+    # Test 1: Basic Scraper
     paper_info = test_scraper_basic()
     
-    # 測試 2: PDF URL 生成
+    # Test 2: PDF URL Generation
     test_pdf_url_generation()
     
-    # 測試 3: 儲存目錄結構
+    # Test 3: Storage Directory
     test_storage_structure()
     
-    # 測試 4: 配置載入
+    # Test 4: Config
     test_config_loading()
     
-    # 測試 5: 資料庫連線
+    # Test 5: Database
     test_database_connection()
     
-    # 儲存結果
+    # Save Results
     save_test_results(paper_info)
     
-    # 總結
+    # Summary
     logger.info("\n" + "=" * 60)
-    logger.info("測試完成！")
+    logger.info("Tests Completed!")
     logger.info("=" * 60)
-    logger.info("\n注意事項：")
-    logger.info("1. PMC PDF 下載可能會遇到 403 錯誤（需要特殊處理）")
-    logger.info("2. 爬蟲功能正常，可以提取論文連結")
-    logger.info("3. 資料庫已準備就緒")
-    logger.info("4. 下一步可以開始建構 PDF 處理模組")
+    logger.info("\nNotes:")
+    logger.info("1. PMC PDF downloads may encounter 403 errors (require special handling).")
+    logger.info("2. Scraper functionality is normal, paper links can be extracted.")
+    logger.info("3. Database is ready.")
+    logger.info("4. Next step: Ensure PDF processing module is working.")
 
 
 if __name__ == "__main__":

@@ -126,7 +126,7 @@ async def query(request: QueryRequest):
         if not results:
             return QueryResponse(
                 question=request.question,
-                answer="抱歉，我找不到相關的資訊來回答您的問題。",
+                answer="Sorry, I cannot find relevant information to answer your question.",
                 sources=[]
             )
         

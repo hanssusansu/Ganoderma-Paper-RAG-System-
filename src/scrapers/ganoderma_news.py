@@ -15,9 +15,9 @@ from ..config import settings
 class GanodermaScraper:
     """Scraper for Ganoderma News website."""
     
-    # 支援的專欄列表
+    # Supported categories list (Do NOT change Chinese values as they are part of the URL)
     CATEGORIES = [
-        "研究新知/2020-2029", # Decade archives
+        "研究新知/2020-2029", # Research News / Decade archives
         "研究新知/2010-2019",
         "研究新知/2000-2009",
         "靈芝調節免疫力",     # Immune Regulation
@@ -68,7 +68,7 @@ class GanodermaScraper:
         Returns:
             List of article URLs
         """
-        # 構建分類頁面 URL（需要根據實際網站結構調整）
+        # Construct category page URL (Adjust based on actual site structure)
         category_url = f"{self.BASE_URL}/index.php/{category}.html"
         
         soup = self._fetch_url(category_url)
@@ -77,17 +77,17 @@ class GanodermaScraper:
         
         article_urls = []
         
-        # 查找所有文章連結（需要根據實際 HTML 結構調整選擇器）
+        # Find all article links (Adjust selector based on actual HTML structure)
         for link in soup.find_all('a', href=True):
             href = link['href']
             
-            # 過濾出文章連結
+            # Filter article links
             if '/index.php/' in href and category in href:
                 full_url = href if href.startswith('http') else f"{self.BASE_URL}{href}"
                 article_urls.append(full_url)
         
         logger.info(f"Found {len(article_urls)} articles in category: {category}")
-        return list(set(article_urls))  # 去重
+        return list(set(article_urls))  # Deduplicate
     
     def extract_paper_links(self, article_url: str) -> Optional[Dict]:
         """
@@ -103,15 +103,15 @@ class GanodermaScraper:
         if not soup:
             return None
         
-        # 提取文章標題
+        # Extract article title
         title_tag = soup.find('h1') or soup.find('h2')
         article_title = title_tag.get_text(strip=True) if title_tag else "Unknown"
         
-        # 查找論文連結
+        # Find paper links
         paper_url = None
         paper_source = None
         
-        # 常見的學術論文網站模式
+        # Common academic paper website patterns
         paper_patterns = {
             'PMC': r'https?://(?:www\.|pmc\.)?ncbi\.nlm\.nih\.gov/(?:pmc/)?articles/(PMC\d+)',
             'PubMed': r'https?://(?:www\.)?pubmed\.ncbi\.nlm\.nih\.gov/(\d+)',
@@ -119,7 +119,7 @@ class GanodermaScraper:
             'DOI': r'https?://(?:www\.)?doi\.org/(10\.\d+/[^\s]+)',
         }
         
-        # 搜尋所有連結
+        # Search all links
         for link in soup.find_all('a', href=True):
             href = link['href']
             
@@ -148,7 +148,7 @@ class GanodermaScraper:
             logger.debug(f"No paper link found in: {article_url}")
             return None
         
-        # 提取發布日期（如果有）
+        # Extract publication date (if available)
         published_date = self._extract_date(soup)
         
         result = {
@@ -158,7 +158,7 @@ class GanodermaScraper:
             'paper_source': paper_source,
             'paper_id': paper_id if 'paper_id' in locals() else 'Unknown',
             'published_date': published_date,
-            'has_pdf': True  # 稍後會驗證
+            'has_pdf': True  # Will be verified later
         }
         
         logger.info(f"Found paper: {paper_source} - {article_title}")
@@ -166,10 +166,10 @@ class GanodermaScraper:
     
     def _extract_date(self, soup: BeautifulSoup) -> Optional[str]:
         """Extract publication date from article page."""
-        # 嘗試多種日期格式和位置
+        # Try multiple date formats and locations
         date_patterns = [
             r'(\d{4})[/-](\d{1,2})[/-](\d{1,2})',
-            r'(\d{4})年(\d{1,2})月(\d{1,2})日',
+            r'(\d{4})年(\d{1,2})月(\d{1,2})日', # 2023年1月1日
         ]
         
         text = soup.get_text()
@@ -194,10 +194,10 @@ class GanodermaScraper:
             logger.info(f"Scraping category: {category}")
             
             try:
-                # 獲取分類下的所有文章
+                # Get all articles in category
                 article_urls = self.scrape_category_page(category)
                 
-                # 提取每篇文章的論文連結
+                # Extract paper link for each article
                 for article_url in article_urls:
                     try:
                         paper_info = self.extract_paper_links(article_url)
@@ -223,7 +223,7 @@ def main():
     """Test the scraper."""
     scraper = GanodermaScraper()
     
-    # 測試單篇文章
+    # Test single article
     test_url = "https://www.ganodermanews.com/index.php/%E7%A0%94%E7%A9%B6%E6%96%B0%E7%9F%A5/2020-2029/747-%E4%BC%8A%E6%9C%97%EF%BC%9A%E8%87%A8%E5%BA%8A%E8%A9%A6%E9%A9%97%E9%A1%AF%E7%A4%BA%EF%BC%8C%E9%9D%88%E8%8A%9D%E5%87%9D%E8%86%A0%E5%8F%AF%E5%8A%A0%E9%80%9F%E6%94%B9%E5%96%84%E5%81%87%E7%89%99%E6%80%A7%E5%8F%A3%E8%85%94%E7%82%8E.html"
     
     paper_info = scraper.extract_paper_links(test_url)

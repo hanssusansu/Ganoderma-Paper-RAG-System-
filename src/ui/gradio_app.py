@@ -42,17 +42,17 @@ class GanodermaRAGUI:
             Tuple of (answer, sources)
         """
         if not self.ready:
-            return "系統尚未準備就緒，請檢查是否有可用的分塊資料。", ""
+            return "System is not ready, please check if chunks data is available.", ""
         
         if not question or not question.strip():
-            return "請輸入問題。", ""
+            return "Please enter a question.", ""
         
         try:
             # Retrieve relevant chunks
             results = self.retriever.retrieve(question, top_k=top_k)
             
             if not results:
-                return "抱歉，我找不到相關的資訊來回答您的問題。", ""
+                return "Sorry, I cannot find relevant information to answer your question.", ""
             
             # Generate answer
             answer = self.generator.generate_answer(question, results)
@@ -64,7 +64,7 @@ class GanodermaRAGUI:
         
         except Exception as e:
             logger.error(f"Error processing query: {e}")
-            return f"處理查詢時發生錯誤: {str(e)}", ""
+            return f"Error processing query: {str(e)}", ""
     
     def _format_sources(self, results: list) -> str:
         """Format source citations."""
@@ -82,11 +82,11 @@ class GanodermaRAGUI:
             citation = metadata.get('citation_str', file_name)
             
             source = f"""
-**來源 {i}** (相關度: {score})
-- 引用: {citation}
-- 章節: {section}
-- 頁碼: {page}
-- 內容預覽: {content_preview}
+**Source {i}** (Relevance: {score})
+- Citation: {citation}
+- Section: {section}
+- Page: {page}
+- Preview: {content_preview}
 """
             sources.append(source)
         
@@ -96,16 +96,16 @@ class GanodermaRAGUI:
         """Create Gradio interface."""
         with gr.Blocks(title="🍄 Ganoderma Papers RAG", theme=gr.themes.Soft()) as demo:
             gr.Markdown("""
-            # 🍄 靈芝論文問答系統
+            # 🍄 Ganoderma Papers RAG System
             
-            基於學術論文的智能問答系統，可以回答關於靈芝研究的問題。
+            Intelligent Q&A system based on academic papers, answering questions about Ganoderma research.
             """)
             
             with gr.Row():
                 with gr.Column(scale=2):
                     question_input = gr.Textbox(
-                        label="請輸入您的問題",
-                        placeholder="例如：靈芝有什麼免疫調節作用？",
+                        label="Ask a question",
+                        placeholder="e.g.: What are the immunomodulatory effects of Ganoderma?",
                         lines=3
                     )
                     
@@ -114,28 +114,28 @@ class GanodermaRAGUI:
                         maximum=10,
                         value=5,
                         step=1,
-                        label="檢索分塊數量"
+                        label="Number of retrieved chunks"
                     )
                     
-                    submit_btn = gr.Button("🔍 查詢", variant="primary")
+                    submit_btn = gr.Button("🔍 Search", variant="primary")
                 
                 with gr.Column(scale=3):
                     answer_output = gr.Textbox(
-                        label="答案",
+                        label="Answer",
                         lines=10,
                         max_lines=20,
                         interactive=False
                     )
             
-            with gr.Accordion("🔍 系統原始檢索資料 (點擊展開查看)", open=False):
+            with gr.Accordion("🔍 View Retrieved Sources (Click to expand)", open=False):
                 sources_output = gr.Markdown()
             
             # Examples
             gr.Examples(
                 examples=[
-                    ["靈芝與免疫調節相關的研究有哪些？", 5],
-                    ["靈芝多醣體對於細胞的科學研究發現為何？", 5],
-                    ["相關臨床研究的現狀？", 3],
+                    ["What are the studies related to Ganoderma and immune regulation?", 5],
+                    ["What are the scientific findings on Ganoderma polysaccharides and cells?", 5],
+                    ["What is the current status of clinical trials?", 3],
                 ],
                 inputs=[question_input, top_k_slider]
             )
@@ -155,10 +155,10 @@ class GanodermaRAGUI:
         
             gr.Markdown("""
             ---
-            ### ⚠️ 免責聲明
-            本系統僅為「靈芝學術文獻圖書館」之檢索工具，所有內容皆為學術研究文獻之摘要與整理。
-            內容僅供學術研究與教育用途，**不代表任何醫療建議、功效宣稱或承諾**。
-            若有疾病或醫療需求，請務必諮詢專業醫師。
+            ### ⚠️ Disclaimer
+            This system is a retrieval tool for the "Ganoderma Academic Library". All content is a summary and compilation of academic research literature.
+            The content is for academic research and educational purposes only and **does not represent any medical advice, efficacy claims, or promises**.
+            If you have medical needs, please consult a professional physician.
             """)
     
         return demo

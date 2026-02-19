@@ -19,7 +19,7 @@ def test_single_article():
     
     scraper = GanodermaScraper()
     
-    # 測試文章 URL
+    # Test Article URL
     test_url = "https://www.ganodermanews.com/index.php/%E7%A0%94%E7%A9%B6%E6%96%B0%E7%9F%A5/2020-2029/747-%E4%BC%8A%E6%9C%97%EF%BC%9A%E8%87%A8%E5%BA%8A%E8%A9%A6%E9%A9%97%E9%A1%AF%E7%A4%BA%EF%BC%8C%E9%9D%88%E8%8A%9D%E5%87%9D%E8%86%A0%E5%8F%AF%E5%8A%A0%E9%80%9F%E6%94%B9%E5%96%84%E5%81%87%E7%89%99%E6%80%A7%E5%8F%A3%E8%85%94%E7%82%8E.html"
     
     paper_info = scraper.extract_paper_links(test_url)
@@ -70,7 +70,7 @@ def test_category_scraping(limit=5):
     
     scraper = GanodermaScraper()
     
-    # 測試「研究新知」分類
+    # Test "Research News" category (Note: using Chinese name as it is part of URL)
     category = "研究新知"
     logger.info(f"Scraping category: {category}")
     

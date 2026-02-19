@@ -16,48 +16,36 @@ parts/
 sdist/
 var/
 wheels/
-*.egg-info/
+share/python-wheels/
 .installed.cfg
 *.egg
-
-# Virtual Environment
-.venv/
+MANIFEST
+.env
+.venv
+env/
 venv/
 ENV/
-env/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# Environment variables
-.env
-.env.local
-
-# Data
-data/pdfs/*.pdf
-data/metadata/*.json
-*.db
-
-# Docker volumes
-postgres_data/
-opensearch_data/
-redis_data/
-ollama_data/
+env.bak/
+venv.bak/
 
 # Logs
 *.log
-logs/
-airflow/logs/
+
+# Data (Keep structure but ignore content)
+data/pdfs/*
+!data/pdfs/.keep
+data/processed/*
+!data/processed/.keep
+data/metadata/*
+!data/metadata/.keep
 
 # Testing
 .pytest_cache/
 .coverage
 htmlcov/
+stress_test_output.txt
 
-# OS
-.DS_Store
-Thumbs.db
+# Editor
+.vscode/
+.idea/
+*.swp

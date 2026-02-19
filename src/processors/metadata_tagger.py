@@ -39,10 +39,10 @@ You are a scientific literature analyst for Ganoderma lucidum (Reishi) research.
 Your task is to identify TWO specific details from the research paper text provided below:
 
 1. **Part of the Mushroom Used**:
-   - Options: "Fruiting Body" (子實體), "Mycelium" (菌絲體), "Spore" (孢子), "Mixed", or "Unknown".
+   - Options: "Fruiting Body", "Mycelium", "Spore", "Mixed", or "Unknown".
    
 2. **Extraction Method / Solvent**:
-   - Options: "Water/Aqueous" (水萃取), "Ethanol/Alcohol" (醇萃取), "Methanol", "Polysaccharide Extract", "Triterpenoid Extract", "Powder" (Raw powder, no extract), or "Unknown".
+   - Options: "Water/Aqueous", "Ethanol/Alcohol", "Methanol", "Polysaccharide Extract", "Triterpenoid Extract", "Powder" (Raw powder, no extract), or "Unknown".
 
 Return ONLY a JSON object. Do not include any other text.
 Format:

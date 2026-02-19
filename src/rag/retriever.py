@@ -95,6 +95,7 @@ class SimpleRetriever:
             Translated query or keywords
         """
         # Dictionary for common keywords (Fast path)
+        # Keeping Chinese keys for legacy support if user inputs Chinese
         keywords_map = {
             "靈芝": "Ganoderma lucidum",
             "免疫": "immune immunomodulatory",
@@ -189,13 +190,13 @@ def main():
     
     results = retriever.retrieve(query, top_k=3)
     
-    print(f"\n查詢: {query}")
-    print(f"找到 {len(results)} 個相關分塊:\n")
+    print(f"\nQuery: {query}")
+    print(f"Found {len(results)} relevant chunks:\n")
     
     for i, result in enumerate(results, 1):
-        print(f"{i}. 分數: {result['score']}")
-        print(f"   章節: {result.get('section', 'N/A')}")
-        print(f"   內容預覽: {result['content'][:150]}...")
+        print(f"{i}. Score: {result['score']}")
+        print(f"   Section: {result.get('section', 'N/A')}")
+        print(f"   Content Preview: {result['content'][:150]}...")
         print()
 
 
