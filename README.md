@@ -2,6 +2,8 @@
 
 A specialized Retrieval-Augmented Generation (RAG) system for Ganoderma academic papers, capable of automated scraping, processing, and querying of Ganoderma-related academic research.
 
+<img width="2752" height="1536" alt="rag system flow chart eng" src="https://github.com/user-attachments/assets/fd67398c-0b84-4168-bf41-9678b18a1c58" />
+
 ## ✨ Features
 
 - 📚 **Multi-Column Scraping**: Automatically scrapes academic papers from all columns of the Ganoderma News website.
